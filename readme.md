@@ -1,6 +1,6 @@
 ### hooThat
 
-A small application to analyse www logs to determine number of hits and country of origin. The purpose is to be able to remove analytics from the site while being able to keep an eye on these basic stats.
+A small application to analyse www logs to determine number of unique IP hits and country of origin. The purpose is to be able to remove analytics from the site while being able to keep an eye on these basic stats.
 
 1. Retrieve IPs from www access log.
 1. Run the IPs through a geo IP DB.

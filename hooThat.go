@@ -27,7 +27,7 @@ func getCreds() (string, string) {
 		rtn = append(rtn, credScanner.Text())
 		i++
 	}
-	// Return first two lines from config file
+	// Return first two rows from config file
 	readCreds.Close()
 	return rtn[0], rtn[1]
 }
