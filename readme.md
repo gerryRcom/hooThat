@@ -15,3 +15,7 @@ Items I'd like to add in the future:
 1. Retain historic data, including a useful way to display.
 1. Report on stats of specific pages of the site.
 1. Improve code.
+
+
+This product includes GeoLite2 data created by MaxMind, available from
+[https://www.maxmind.com.](https://www.maxmind.com)

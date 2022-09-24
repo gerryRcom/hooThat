@@ -21,15 +21,15 @@ func getCreds() (string, string) {
 	}
 	credScanner := bufio.NewScanner(readCreds)
 	credScanner.Split(bufio.ScanLines)
-	var rtn []string
+	var returnCreds []string
 	var i = 0
 	for credScanner.Scan() {
-		rtn = append(rtn, credScanner.Text())
+		returnCreds = append(returnCreds, credScanner.Text())
 		i++
 	}
-	// Return first two rows from config file
+	// Close file and return first two rows from config file
 	readCreds.Close()
-	return rtn[0], rtn[1]
+	return returnCreds[0], returnCreds[1]
 }
 
 // Function to take in an IP, parse the resulting json data and return the country of origin.
@@ -76,21 +76,25 @@ func countryInstances(countries []string) {
 		countryDict[country] = countryDict[country] + 1
 	}
 	// Print the items and count withing a html structure
-	fmt.Println("<html><head><title>Traffic Stats</title></head><body>")
 	for key, value := range countryDict {
-		fmt.Println("<br><strong>"+key+":</strong>", value)
+		fmt.Printf("<tr><td><strong>%s:</strong></td><td>%v</td></tr>\n", key, value)
 	}
-	fmt.Println("</body></html>")
 }
 
 // Main function that parses IPs out of access.logs and passes data to the other functions.
 func main() {
-	// Read out access.log, final version will iterate through last X amount of logs.
-	accessFile, err := os.Open("access.log.1")
+	// Read access.log, final version will iterate through last X amount of logs.
+	accessFile, err := os.Open("logs/access.log.1")
 	if err != nil {
 		fmt.Print(err)
 		accessFile.Close()
 	} else {
+		// Get last modified date of file to include in final output.
+		modifiedFile, err := os.Stat("logs/access.log.1")
+		if err != nil {
+			log.Fatal(err)
+		}
+		logDate := modifiedFile.ModTime()
 		// Declare some required arrays for use later. Read in our log file
 		var unique_ips []string
 		var countryCount []string
@@ -116,6 +120,8 @@ func main() {
 		}
 		// Close log file once finished
 		accessFile.Close()
+		fmt.Println("<html><head><title>Traffic Stats</title></head><body><table><tr><td><strong>" + logDate.String() + "</strong></td><td></td></tr>")
 		countryInstances(countryCount)
+		fmt.Println("</table></body></html>")
 	}
 }
