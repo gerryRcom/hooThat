@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -69,16 +70,20 @@ func getCountry(ipIn string) string {
 }
 
 // Function to take an array of strings, count unique values and return the items and count in right html
-func countryInstances(countries []string) {
+func countryInstances(countries []string) []string {
 	// Create a dictionary of values for each element passed and count unique entities.
 	countryDict := make(map[string]int)
 	for _, country := range countries {
 		countryDict[country] = countryDict[country] + 1
 	}
 	// Print the items and count withing a html structure
+	var ciReturn []string
 	for key, value := range countryDict {
-		fmt.Printf("<tr><td><strong>%s:</strong></td><td>%v</td></tr>\n", key, value)
+		//fmt.Printf("<tr><td><strong>%s:</strong></td><td>%v</td></tr>\n", key, value)
+		// Build our return content, need to convert our integer to string using strconv
+		ciReturn = append(ciReturn, "<tr><td><strong>"+key+":</strong></td><td>"+strconv.Itoa(value)+"</td></tr>\n")
 	}
+	return ciReturn
 }
 
 // Main function that parses IPs out of access.logs and passes data to the other functions.
@@ -95,6 +100,7 @@ func main() {
 			log.Fatal(err)
 		}
 		logDate := modifiedFile.ModTime()
+		logName := strings.Split(logDate.String(), " ")
 		// Declare some required arrays for use later. Read in our log file
 		var unique_ips []string
 		var countryCount []string
@@ -120,8 +126,18 @@ func main() {
 		}
 		// Close log file once finished
 		accessFile.Close()
-		fmt.Println("<html><head><title>Traffic Stats</title></head><body><table><tr><td><strong>" + logDate.String() + "</strong></td><td></td></tr>")
-		countryInstances(countryCount)
-		fmt.Println("</table></body></html>")
+		//fmt.Println("<html><head><title>Traffic Stats</title></head><body><table><tr><td><strong>" + logName[0] + "</strong></td><td></td></tr>")
+
+		fileOutput, err := os.Create(logName[0] + ".txt")
+		if err != nil {
+			log.Fatal()
+		}
+		fileContent := countryInstances(countryCount)
+		for _, value := range fileContent {
+			fmt.Fprintf(fileOutput, value)
+		}
+
+		//countryInstances(countryCount)
+		//fmt.Println("</table></body></html>")
 	}
 }
